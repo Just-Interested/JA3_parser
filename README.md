@@ -13,7 +13,9 @@ https://github.com/seladb/PcapPlusPlus/releases/download/v22.11/pcapplusplus-22.
 
 Работоспособность проверялась в docker-контейнере, запускаемом из образа centos:7
 Пример команды для запуска:
+```
 docker run --rm -it --entrypoint=/bin/bash -v "/working/directory":/data centos:7
+```
 , где /working/directory - каталог содержащий исполняемый файл, файл конфигурации, и и каталог captured с файлами для обработки
 
 
