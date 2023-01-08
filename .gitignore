@@ -9,3 +9,14 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+.vscode/
+[Bb]uild/
+
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.log
+*.json
