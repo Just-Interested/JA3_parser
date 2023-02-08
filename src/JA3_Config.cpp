@@ -5,7 +5,25 @@
 #include <fstream>
 #include <algorithm>
 
-int Config::ReadConfig(){
+Config::Config() 
+{
+    params_names.push_back("input_directory");
+    params_names.push_back("output_file");
+    params_names.push_back("output_dir");
+    params_names.push_back("check_interval");
+    params_names.push_back("max_number_of_output_files");
+    params_names.push_back("max_output_file_size");
+
+    parameters["input_directory"] = "./captured";
+    parameters["output_file"] = "./output.csv";
+    parameters["output_dir"] = "./output";
+    parameters["check_interval"] = "15";
+    parameters["max_number_of_output_files"] = "9";
+    parameters["max_output_file_size"] = "500";
+}
+
+int Config::ReadConfig()
+{
     std::string config_file_name = "/etc/ja3_parser.conf";
     if (!std::filesystem::exists(config_file_name)){
         config_file_name = "./ja3_parser.conf";
@@ -17,37 +35,36 @@ int Config::ReadConfig(){
     std::ifstream config_file(config_file_name);
     std::string line;
     while (std::getline(config_file, line)){
-        if (line.at(0) == '#')
+        const auto first_char_pos = line.find_first_not_of(" \t\n");
+        if (line.at(first_char_pos) == '#')
             continue;
-        std::string input_dir_param_name = "input_directory";
-        std::string output_file_param_name = "output_file";
-        std::string check_interval_param_name = "check_interval";
-        int pos = 0;
-        pos = line.find(input_dir_param_name + "=");
-        if (pos != std::string::npos){
-            pcap_files_dir = line.substr(pos + input_dir_param_name.length() + 1);
-            pcap_files_dir.erase( std::remove(pcap_files_dir.begin(), pcap_files_dir.end(), '\r'), pcap_files_dir.end() );
-            std::cout << "Config parameter " << input_dir_param_name << " found: " << pcap_files_dir << std::endl;
-            continue;
-        }
-        pos = 0;
-        pos = line.find(output_file_param_name + "=");
-        if (pos != std::string::npos){
-            output_file = line.substr(pos + output_file_param_name.length() + 1);
-            output_file.erase( std::remove(output_file.begin(), output_file.end(), '\r'), output_file.end() );
-            std::cout << "Config parameter " << output_file_param_name << " found: " << output_file << std::endl;
-            continue;
-        }
-        pos = 0;
-        pos = line.find(check_interval_param_name + "=");
-        if (pos != std::string::npos){
-            std::string check_interval_str;
-            check_interval_str = line.substr(pos + check_interval_param_name.length() + 1);
-            check_interval_str.erase( std::remove(check_interval_str.begin(), check_interval_str.end(), '\r'), check_interval_str.end() );
-            check_interval = std::stoi(check_interval_str);
-            std::cout << "Config parameter " << check_interval_param_name << " found: " << check_interval << "s" << std::endl;
-            continue;
+        for (const auto param_name : params_names){
+            int pos = 0;
+            std::string param_value;
+            pos = line.find(param_name + "=");
+            if (pos != std::string::npos){
+                param_value = line.substr(pos + param_name.length() + 1);
+                param_value.erase( std::remove(param_value.begin(), param_value.end(), '\r'), param_value.end() );
+                parameters[param_name] = param_value;
+                continue;
+            }
         }
     }
+    PrintParametrs();
     return 0;
+}
+
+std::string Config::GetParamByName(std::string name)
+{
+    if (parameters.find(name) != parameters.end())
+        return parameters[name];
+    return std::string();
+}
+
+void Config::PrintParametrs() const
+{
+    std::cout << "Found config:" << std::endl;
+    for (const auto& [key, value] : parameters){
+        std::cout << '[' << key << "] = " << value << "; " << std::endl;
+    }
 }

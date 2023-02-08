@@ -36,7 +36,7 @@ bool JA3_parser::parseDir(std::string path){
     }
     std::vector<std::string> file_names;
     for (const auto & entry : std::filesystem::directory_iterator(workDir))
-        if (entry.path().extension() == ".pcap" || entry.path().extension() == ".pcapng")
+        // if (entry.path().extension() == ".pcap" || entry.path().extension() == ".pcapng")
             file_names.push_back(entry.path());
     
     // Пробуем прочитать каждый файл
@@ -58,7 +58,7 @@ bool JA3_parser::parseFile(std::string fileName){
     }
 
     if (!reader->open()) {
-        std::cerr << "Cannot open .pcap for reading" << std::endl;
+        std::cerr << "Cannot open file for reading" << std::endl;
         return 1;
     }
 
@@ -67,7 +67,9 @@ bool JA3_parser::parseFile(std::string fileName){
         parsePacket(rawPacket);
     }
     reader->close();
+
     updateResults();
+
     flowTable.clear();
     const auto end_time = std::chrono::steady_clock::now();
     const auto dur = end_time - start_time;

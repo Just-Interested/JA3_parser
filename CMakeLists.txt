@@ -6,7 +6,7 @@ set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0) # для совместимости с библиотеками pcap++ скомпилированными для centos 7
 
-add_executable(main main.cpp src/JA3_parser.cpp src/JA3_Config.cpp)
+add_executable(main main.cpp src/JA3_parser.cpp src/JA3_Config.cpp src/OutputWriter.cpp)
 
 target_include_directories(
     main PRIVATE
